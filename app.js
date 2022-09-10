@@ -4,6 +4,7 @@ const swaggerUI = require("swagger-ui-express");
 const swaggerJSdoc = require("swagger-jsdoc");
 const mongoose = require("mongoose");
 const ComposerAPI = require("./routes/purselley-composer-routes");
+const PersonAPI = require("./routes/purselley-person-routes");
 
 let app = express();
 //  app set variables
@@ -39,13 +40,13 @@ const options = {
       version: "1.0.0",
     }, //  end info
   }, //  end definition
-  apis: ["./routes/purselley-composer-routes.js"], //  files containing annotations for the OpenAPI Specifications
+  apis: ["./routes/*.js"], //  files containing annotations for the OpenAPI Specifications
 };
 
 const openapiSpecification = swaggerJSdoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(openapiSpecification));
-
 app.use("/api", ComposerAPI);
+app.use("/api", PersonAPI);
 
 http.createServer(app).listen(app.get("port"), function () {
   console.log(`Application started and listening on port ${app.get("port")}`);
