@@ -108,7 +108,7 @@ router.get("/composers/:id", async (req, res) => {
  *     tags:
  *       - Composers
  *     description: API for adding a new composer document to MongoDB Atlas
- *     summary: Creates a new composer document
+ *     summary: creates a new composer document
  *     requestBody:
  *       description: composer information
  *       content:
