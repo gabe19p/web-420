@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const ComposerAPI = require("./routes/purselley-composer-routes");
 const PersonAPI = require("./routes/purselley-person-routes");
 const UserAPI = require("./routes/purselley-session-routes");
+const CustomerAPI = require("./routes/purselley-node-shopper-routes");
 
 let app = express();
 //  app set variables
@@ -49,6 +50,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(openapiSpecification));
 app.use("/api", ComposerAPI);
 app.use("/api", PersonAPI);
 app.use("/api", UserAPI);
+app.use("/api", CustomerAPI);
 
 http.createServer(app).listen(app.get("port"), function () {
   console.log(`Application started and listening on port ${app.get("port")}`);
