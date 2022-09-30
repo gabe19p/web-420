@@ -8,6 +8,7 @@
 */
 
 const express = require("express");
+const { db } = require("../models/purselley-composer");
 const router = express.Router();
 const Composer = require("../models/purselley-composer");
 
@@ -155,6 +156,146 @@ router.post("/composers", async (req, res) => {
     console.log(e);
     res.status(500).send({
       message: `Server Exception: ${e.message}`,
+    });
+  }
+});
+
+/**
+ * updateComposerById
+ * @openapi
+ * /api/composers/{id}:
+ *   put:
+ *     tags:
+ *       - Composers
+ *     description: API for updated a composer by their Id
+ *     summary: update a composer's first & last name
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: composer document id
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: composer information
+ *       content:
+ *        application/json:
+ *          schema:
+ *             required:
+ *               - firstName
+ *               - lastName
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Composer document
+ *       '401':
+ *         description: Invalid composerId
+ *       '500':
+ *         description: Server exception
+ *       '501':
+ *         description: MongoDB Exception
+ */
+router.put("/composers/:id", async (req, res) => {
+  try {
+    // query the db to find a composer w/ the parameter
+    Composer.findOne({ _id: req.params.id }, function (err, composer) {
+      // if mongoDB errors out
+      if (err) {
+        console.log(err);
+        res.status(501).send({
+          message: `MongoDB Exception: ${err}`,
+        });
+      }
+      // if a composer is found
+      if (composer) {
+        // update composer w/ request body
+        composer.set({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+        });
+        // save the document
+        composer.save(function (err, updatedComposer) {
+          // if mongoDB errors out
+          if (err) {
+            console.log(err);
+            res.status(501).send({
+              message: `MongoDB Exception: ${err}`,
+            });
+          } else {
+            // composer successfully updated
+            console.log(updatedComposer);
+            res.json(updatedComposer);
+          }
+        }); // end document save
+      }
+      // no composer found
+      if (!composer) {
+        console.log("Invalid ComposerId");
+        res.status(401).send({
+          message: `Invalid ComposerId`,
+        });
+      }
+    });
+  } catch (error) {
+    // server issue
+    console.log(error);
+    res.status(500).send({
+      message: `Server Exception: ${error.message}`,
+    });
+  }
+});
+
+/**
+ * deleteComposerById
+ * @openapi
+ * /api/composers/{id}:
+ *   delete:
+ *     tags:
+ *       - Composers
+ *     description: API for deleting a composer
+ *     summary: delete a composer from the collection
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: id of composer f/ query
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Composer document
+ *       '500':
+ *         description: Server Exception
+ *       '501':
+ *         description: MongoDB Exception
+ */
+router.delete("/composers/:id", async (req, res) => {
+  try {
+    // find the composer in the collection
+    Composer.findByIdAndDelete(
+      { _id: req.params.id },
+      function (err, deletedComposer) {
+        // mongoDB error
+        if (err) {
+          console.log(err);
+          res.status(501).send({ message: `MongoDB Exception: ${err}` });
+        } else {
+          // list composer that was just deleted
+          console.log(deletedComposer);
+          console.log("-- Deleted --");
+          res.json(deletedComposer);
+        }
+      } // end function
+    ); // end find&delete
+  } catch (error) {
+    // server error
+    console.log(error);
+    res.status(500).send({
+      message: `Server Exception: ${error.message}`,
     });
   }
 });
