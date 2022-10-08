@@ -7,6 +7,7 @@ const ComposerAPI = require("./routes/purselley-composer-routes");
 const PersonAPI = require("./routes/purselley-person-routes");
 const UserAPI = require("./routes/purselley-session-routes");
 const CustomerAPI = require("./routes/purselley-node-shopper-routes");
+const TeamsAPI = require("./routes/purselley-teams-routes");
 
 let app = express();
 //  app set variables
@@ -51,6 +52,7 @@ app.use("/api", ComposerAPI);
 app.use("/api", PersonAPI);
 app.use("/api", UserAPI);
 app.use("/api", CustomerAPI);
+app.use("/api", TeamsAPI);
 
 http.createServer(app).listen(app.get("port"), function () {
   console.log(`Application started and listening on port ${app.get("port")}`);
